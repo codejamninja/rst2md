@@ -198,6 +198,26 @@ class Translator(nodes.NodeVisitor):
 
     def depart_title(self, node):
         self.body.append('\n')
+        
+    def visit_reference(self, node):
+        ref = ''
+        if 'refuri' in node:
+            ref = node['refuri'] or '#'
+        else:
+            assert 'refid' in node, \
+                'References must have "refuri" or "refid" attribute.'
+            ref = '#' + node['refid']
+        self.body.append('[' + node.astext() + '](' + ref + ')')
+        raise nodes.SkipNode
+
+    def depart_reference(self, node):
+        raise nodes.SkipNode
+
+    def visit_raw(self, node):
+        pass
+
+    def depart_raw(self, node):
+        pass
 
     def visit_transition(self, node):
         # Simply replace a transition by a horizontal rule.
